@@ -4,10 +4,12 @@ cloud.aws.stack.auto: false
 cloud:
   aws:
     region:
-      static: <리전정보 > # ap-northeast-2
+      static: <리전정보> # ex: ap-northeast-2
       auto: false
     credentials:
-      accessKey: <your accessKey> # AKIASBDAEEASEWE
-      secretKey: <your secretKey> # CAspdkldkl+baboabaoboa/V4ACSJSDfbPtest3
+      accessKey: <your accessKey> # ex: AKIASBDAEEASEWE
+      secretKey: <your secretKey> # ex: CAspdkldkl+baboabaoboa/V4ACSJSDfbPtest3
     end-point:
-      uri: https://sqs.ap-northeast-2.amazonaws.com/<YOUR ID, get this from SQS Console>/jmlim-sqs
+      uri: https://sqs.ap-northeast-2.amazonaws.com/<YOUR ID, get this from SQS Console>/<sqs-경로>
+      ## ex: https://sqs.ap-northeast-2.amazonaws.com/12345678/jmlim-sqs
+
