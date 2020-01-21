@@ -1,0 +1,11 @@
+### 제품구매 api example
+POST http://localhost:8080/sqs/complete-purchase
+Content-Type: application/json
+
+{
+  "userId": "hackerljm@gmail.com",
+  "purchasePrice": 110.89,
+  "itemName": "ddong"
+}
+
+###
