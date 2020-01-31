@@ -51,5 +51,6 @@ public class SQSController {
         log.info("message: {}", message);
         PurchaseInfo completedPurchaseInfo = objectMapper.readValue(message, PurchaseInfo.class);
         log.info("CompletedPurchaseInfo : {} ", completedPurchaseInfo);
+
     }
 }

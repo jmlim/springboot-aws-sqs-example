@@ -1,15 +1,8 @@
 ## 로컬에서 실행할때는 아래와 같이 cloud.aws.stack.auto: false 을 추가해줘야 함.
-cloud.aws.stack.auto: false
-
 cloud:
   aws:
-    region:
-      static: <리전정보> # ex: ap-northeast-2
+    stack:
       auto: false
-    credentials:
-      accessKey: <your accessKey> # ex: AKIASBDAEEASEWE
-      secretKey: <your secretKey> # ex: CAspdkldkl+baboabaoboa/V4ACSJSDfbPtest3
-    end-point:
-      uri: https://sqs.ap-northeast-2.amazonaws.com/<YOUR ID, get this from SQS Console>/<sqs-경로>
-      ## ex: https://sqs.ap-northeast-2.amazonaws.com/12345678/jmlim-sqs
-
+    end-point.uri: ## ex: https://sqs.ap-northeast-2.amazonaws.com/1234567890/jmlim-sqs
+    region:
+      static: ap-northeast-2 # ec2 환경이 아니므로

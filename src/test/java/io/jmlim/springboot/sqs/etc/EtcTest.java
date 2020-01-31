@@ -1,4 +1,4 @@
-package io.jmlim.springboot.sqs.config;
+package io.jmlim.springboot.sqs.etc;
 
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.profile.internal.*;
@@ -6,59 +6,28 @@ import com.amazonaws.auth.profile.internal.securitytoken.STSProfileCredentialsSe
 import com.amazonaws.profile.path.AwsProfileFileLocationProvider;
 import com.amazonaws.services.sqs.AmazonSQSAsync;
 import com.amazonaws.services.sqs.AmazonSQSAsyncClientBuilder;
-import org.springframework.cloud.aws.messaging.config.SimpleMessageListenerContainerFactory;
-import org.springframework.cloud.aws.messaging.core.QueueMessagingTemplate;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import com.amazonaws.services.sqs.model.Message;
+import com.amazonaws.util.StringUtils;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Configuration
-public class SQSConfig {
+import static com.amazonaws.auth.profile.internal.AwsProfileNameLoader.AWS_PROFILE_ENVIRONMENT_VARIABLE;
 
-    /**
-     * https://stackoverflow.com/questions/40092518/how-to-configure-custom-spring-cloud-aws-simplemessagelistenercontainerfactory-s
-     *
-     * @return
-     */
-    @Bean
-    public SimpleMessageListenerContainerFactory simpleMessageListenerContainerFactory() {
-        SimpleMessageListenerContainerFactory factory = new SimpleMessageListenerContainerFactory();
-        factory.setAmazonSqs(amazonSQSAsync());
-        factory.setMaxNumberOfMessages(10);
-        factory.setWaitTimeOut(20);// Long polling 설정
-        return factory;
+public class EtcTest {
+
+    @Test
+    public void test1() {
+        System.out.println(StringUtils.trim(System.getenv(AWS_PROFILE_ENVIRONMENT_VARIABLE)));
     }
 
-    @Bean
-    public QueueMessagingTemplate queueMessagingTemplate() {
-        return new QueueMessagingTemplate(amazonSQSAsync());
-    }
-
-    /**
-     * @return
-     */
-    public AmazonSQSAsync amazonSQSAsync() {
-        return AmazonSQSAsyncClientBuilder.standard()//.withRegion(Regions.fromName(region))
-                .withCredentials(getDefaultCredentials())
-                .build();
-    }
-
-    /**
-     * profile 을 받아 해당 프로파일에 대한 role을 사용
-     * <p>
-     * environment variable에 AWS_PROFILE=jmlim-sqs;AWS_REGION=ap-northeast-2 셋팅.
-     *
-     * 설정하지 않으면 default
-     *
-     * @return
-     */
-    public AWSCredentialsProvider getDefaultCredentials() {
-
+    @Test
+    public void profileAssumeSqsTest() {
         final String profileName = AwsProfileNameLoader.INSTANCE.loadProfileName();
         final AllProfiles allProfiles = new AllProfiles(Stream.concat(
                 BasicProfileConfigLoader.INSTANCE.loadProfiles(
@@ -76,11 +45,27 @@ public class SQSConfig {
         final BasicProfile profile = Optional.ofNullable(allProfiles.getProfile(profileName))
                 .orElseThrow(() -> new RuntimeException(String.format("Profile '%s' not found in %s",
                         profileName, allProfiles.getProfiles().keySet())));
+        AWSCredentialsProvider provider;
         if (profile.isRoleBasedProfile()) {
-            return new ProfileAssumeRoleCredentialsProvider(STSProfileCredentialsServiceLoader.getInstance(), allProfiles, profile);
+            provider = new ProfileAssumeRoleCredentialsProvider(STSProfileCredentialsServiceLoader.getInstance(), allProfiles, profile);
         } else {
-            return new ProfileStaticCredentialsProvider(profile);
+            provider = new ProfileStaticCredentialsProvider(profile);
+        }
+
+        AmazonSQSAsync sqs = AmazonSQSAsyncClientBuilder.standard()//.withRegion(Regions.fromName(region))
+                .withCredentials(provider)
+                .build();
+
+
+        String queueUrl = sqs.getQueueUrl("jmlim-sqs").getQueueUrl();
+        System.out.println(queueUrl);
+
+        List<Message> messages = sqs.receiveMessage(queueUrl).getMessages();
+
+        for (Message m : messages) {
+            System.out.println("========");
+            System.out.println(m.getBody());
+            System.out.println("==========");
         }
     }
-
 }

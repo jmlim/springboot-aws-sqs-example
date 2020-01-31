@@ -29,6 +29,8 @@ ext {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.cloud:spring-cloud-starter-aws-messaging'
+    // https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-sts
+    compile group: 'com.amazonaws', name: 'aws-java-sdk-sts', version: '1.11.415'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     annotationProcessor 'org.projectlombok:lombok'
