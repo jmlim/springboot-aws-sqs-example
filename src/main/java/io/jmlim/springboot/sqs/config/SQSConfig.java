@@ -25,6 +25,11 @@ public class SQSConfig {
 
     /**
      * https://stackoverflow.com/questions/40092518/how-to-configure-custom-spring-cloud-aws-simplemessagelistenercontainerfactory-s
+     * <p>
+     * 메세지를 maxNumberOfMessage 수 만큼 불러오면 다음 불러오기까지 기다린다.
+     * 재 호출에 대한 시간을 조절하는 것은 AWS SQS 에 들어간 후 다음을 수정한다.(기본값 30초)
+     * <p>
+     * https://lemontia.tistory.com/871
      *
      * @return
      */
@@ -32,8 +37,8 @@ public class SQSConfig {
     public SimpleMessageListenerContainerFactory simpleMessageListenerContainerFactory() {
         SimpleMessageListenerContainerFactory factory = new SimpleMessageListenerContainerFactory();
         factory.setAmazonSqs(amazonSQSAsync());
-        factory.setMaxNumberOfMessages(10);
-        factory.setWaitTimeOut(20);// Long polling 설정
+        factory.setMaxNumberOfMessages(10); // 2 ~ 10 개 까지 설정 가능.
+        factory.setWaitTimeOut(10);// Long polling 설정
         return factory;
     }
 
